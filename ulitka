@@ -1,0 +1,74 @@
+#!/bin/sh
+"export" "AWKPATH=$( dirname $0 )/include:$AWKPATH" 
+"exec" "gawk" -f "$0" "--" "$@"
+
+@include "getopt.awk"
+@include "arg.awk"
+@include "argparse.awk"
+@include "chain.awk"
+
+# Subcommands
+
+@include "easy.awk"
+@include "lift.awk"
+@include "header.awk"
+@include "fa2chain.awk"
+@include "lchain.awk"
+@include "conv.awk"
+@include "rev.awk"
+@include "faidx.awk"
+
+@namespace "ulitka"
+
+BEGIN{
+help="\
+    ulitka v0.1.0 -- the Unfancy Liftover Toolkit in Awk! \n\
+    Subcommands: \n\
+    \tulitka easy     -- full VCF liftover workflow, optionally parallelized (lift + header) \n\
+    \tulitka lift     -- lift over VCF file using a chain file\n\
+    \tulitka header   -- update VCF header using a new FASTA file \n\
+    \tulitka fa2chain -- make a chain file from a FASTA alignment, new ref 1st seq \n\
+    \tulitka lchain   -- convert chain files to/from indexable lchain files \n\
+    \tulitka conv     -- convert genomic coordinates (BED or chr:start-end) using chain files \n\
+    \tulitka rev      -- swap target and query genomes in chain files \n\
+    \tulitka faidx    -- reimplemented faidx indexing & querying of FASTA files"
+
+  # Parse subcommand
+  subcmd=ARGV[1]
+
+  switch (subcmd) {
+    case "easy":
+      easy::run()
+    case "lift":
+      lift::run()
+    case "header":
+      header::run()
+    case "fa2chain":
+      fa2chain::run()
+    case "lchain":
+      lchain::run()
+    case "conv":
+      convert::run()
+    case "rev":
+      rev::run()
+    case "faidx":
+      faidx::run()
+    default:
+      print help
+      if (subcmd != "") {
+        print "Invalid subcommand: "subcmd > "/dev/stderr"
+        exit 1
+      }
+      exit 0
+  }
+}
+
+function assert(condition, explanation) {
+  if (! condition) {
+    print help
+    printf("Error %s:%d: %s\n",
+           FILENAME, FNR, explanation) > "/dev/stderr"
+    exit 1
+  }
+}
+
