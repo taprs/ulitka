@@ -1,4 +1,4 @@
-``ulitka``: the Unfancy Liftover Toolkit in Awk <img src="logo/logo.svg" align="right" width="25%">
+``ulitka``: the Unfancy Liftover Toolkit in Awk <img src="logo/logo.svg" align="right" width="20%">
 ==========
 
 Does what it says: `ulitka` handles **all stages of genomic coordinates liftover** from alignments of anchors to making/manipulating chain files and modifying coordinates in VCF and BED files. No sophisticated indel handling, thus only usable for coordinate conversion and SNP liftover. Sometimes that's the only thing needed, right?
