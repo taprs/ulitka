@@ -7,6 +7,35 @@ If no premade chain file is available, `ulitka` can make it. It takes knowing wh
 
 It comes with convenient **chain file manipulation** commands. Specifically, chains can be "stretched out" into a tabixable one-chain-one-line `lchain` format and "reversed" by swapping reference and query genomes (effectively enabling tabix queries across both coordinate systems).
 
+# Installation
+
+Prerequisites are having the following programs in `$PATH` environmental variable:
+
+ - `gawk`
+ - `tabix`
+ - `bgzip`
+ - GNU `parallel` (to enable parallel execution in `ulitka easy`)
+
+`ulitka` itself is zero-install, being entirely written in GNU AWK. Just clone the repo and make `ulitka` executable:
+
+```bash
+git clone https://github.com/taprs/ulitka.git
+chmod +x ulitka/ulitka
+```
+
+# Subcommands
+
+```
+ulitka easy     -- full VCF liftover workflow, optionally parallelized (lift + header) 
+ulitka lift     -- lift over VCF file using a chain file
+ulitka header   -- update VCF header using a new FASTA file 
+ulitka fa2chain -- make a chain file from a FASTA alignment, new ref 1st seq 
+ulitka lchain   -- convert chain files to/from indexable lchain files 
+ulitka conv     -- convert genomic coordinates (BED or chr:start-end) using chain files 
+ulitka rev      -- swap target and query genomes in chain files 
+ulitka faidx    -- reimplemented faidx indexing & querying of FASTA files
+```
+
 # Imaginary example
 
 ```bash
@@ -22,21 +51,5 @@ ulitka fa2chain -1 old.fa -2 new.fa -f aln_fin.fa > aln.chain
 
 # Lift over VCF, modify header to contain correct ##contig definitions
 ulitka easy -f new.fa -c aln.chain -v file.vcf.gz | bgzip > file_liftover.vcf.gz 
-```
-
-# Installation
-
-Prerequisites are having the following programs in `$PATH` environmental variable:
-
- - `gawk`
- - `tabix`
- - `bgzip`
- - GNU `parallel` (to enable parallel execution in `ulitka easy`)
-
-`ulitka` itself is zero-install, being entirely written in GNU AWK. Just clone the repo and make `ulitka` executable:
-
-```bash
-git clone https://github.com/taprs/ulitka.git
-chmod +x ulitka/ulitka
 ```
 
