@@ -64,7 +64,7 @@ help="\
 
 function assert(condition, explanation) {
   if (! condition) {
-    print help
+    print arg::help
     printf("Error %s:%d: %s\n",
            FILENAME, FNR, explanation) > "/dev/stderr"
     exit 1

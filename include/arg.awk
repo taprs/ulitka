@@ -65,7 +65,7 @@ function parse_args(firstopt, helpmsg, helpltr) {
     }
   }
   help = helpmsg "\n" format_help()
-  if ( arg::args["help"] || ARGC <= firstopt ) { 
+  if ( args["help"] || ARGC <= firstopt ) { 
     print help
     exit 0 
   }
