@@ -16,13 +16,13 @@ help="\
   arg::parse_nonargs()
 
   if (ARGC < 4) { print help; exit 1 }
-  if ( "old" in args ) { 
+  if ( "old" in arg::args ) { 
     old=arg::args["old"] 
   } else {
     old=arg::nonargs[1]
     delete arg::nonargs[1]
   }
-  if ( "new" in args ) { 
+  if ( "new" in arg::args ) { 
     new=arg::args["new"] 
   } else {
     new=arg::nonargs[2]

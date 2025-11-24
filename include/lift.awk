@@ -43,7 +43,7 @@ function main() {
       if ( parse_next_chain(c) != 0 ) { continue }
 
       # get the relevant reference chunk
-      if ( "fasta" in args ) { 
+      if ( "fasta" in arg::args ) { 
         seq = faidx::query(arg::args["fasta"],qchr":"q0+1"-"q1)
       }
 

@@ -12,7 +12,7 @@ function run() {
   arg::parse_args(2, help)
   arg::parse_nonargs()
 
-  if ( "fasta" in args ) { 
+  if ( "fasta" in arg::args ) { 
     fasta=arg::args["fasta"] 
   } else {
     fasta=arg::nonargs[1]

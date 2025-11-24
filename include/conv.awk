@@ -14,13 +14,13 @@ help="\
   arg::parse_args(2, help)
   arg::parse_nonargs()
 
-  if ( "chain" in args ) { 
+  if ( "chain" in arg::args ) { 
     chain=arg::args["chain"] 
   } else {
     chain=arg::nonargs[1]
     delete arg::nonargs[1]
   }
-  if ( "reg" in args ) { regs[arg::args["reg"]]=nregs=1 }
+  if ( "reg" in arg::args ) { regs[arg::args["reg"]]=nregs=1 }
   for(i in arg::nonargs) {
     regs[arg::nonargs[i]]=1
     nregs++

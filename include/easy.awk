@@ -28,7 +28,7 @@ help="\
      arg::args["jobs"]=1
   }
   fasta=arg::args["fasta"]
-  if ( "vcf" in args ) { 
+  if ( "vcf" in arg::args ) { 
     vcf=arg::args["vcf"] 
   } else {
     vcf=arg::nonargs[ length(arg::nonargs) ]
