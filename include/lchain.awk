@@ -4,8 +4,8 @@ function run() {
   help="\
   Write a (sorted) linearized chain ('lchain') indexable by target genome coordinates. \n\
   If multiple input files are given, they are concatenated. \n\
-  If run on an lchain.gz file, indexes it as `tabix -s3 -b6 -e7 file.lchain.gz`. \n\
-  EXAMPLES: \n\tulitka lchain --bgzip file.chain > file.lchain.gz; lchain.awk file.lchain.gz \n\
+  If run on an lchain.gz file, indexes it by old ref coordinates: `tabix -s3 -b6 -e7 file.lchain.gz`. \n\
+  EXAMPLES: \n\tulitka lchain --bgzip file.chain > file.lchain.gz; ulitka lchain file.lchain.gz \n\
   \tzcat file.lchain.gz | ulitka lchain -r - > file.chain \n\
   "
   arg::add_argument("r", "rev", 1, "convert lchain to chain instead")
