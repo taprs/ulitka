@@ -48,14 +48,16 @@ help="\
 }
 
 function main() {
-  cmd="header.awk "vcf" "fasta
+  ulitka=ENVIRON["AWKPATH"]
+  sub(/include:.*$/, "ulitka", ulitka)
+  cmd=ulitka" header "vcf" "fasta
   if ( arg::args["bgzip"]==1 ) {
     cmd = cmd " | bgzip"
   }
   print "Executing command: "cmd > "/dev/stderr"
   system(cmd)
   if (arg::args["jobs"]<2) {
-    cmd = "ulitka"
+    cmd = ulitka" lift"
     if (fasta != "") {
       cmd = cmd" --fasta "fasta
     }
@@ -68,7 +70,7 @@ function main() {
     for (c in chains) {
       cmd = cmd" -a "c
     }
-    cmd = cmd " -j "arg::args["jobs"]" --pipepart --recend '\\n\\n' ulitka"( fasta != "" ? " --fasta "fasta : "" )" - "vcf
+    cmd = cmd " -j "arg::args["jobs"]" --pipepart --recend '\\n\\n' " ulitka " lift" ( fasta != "" ? " --fasta "fasta : "" )" - "vcf
   }
     cmd = cmd " | sort -k1,1 -k2,2n"
   if ( arg::args["bgzip"]==1 ) {

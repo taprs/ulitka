@@ -40,14 +40,14 @@ function main() {
     while (getline < c > 0) {
 
       # Parse next chain into several variables (tchr, t0, t1, qchr, q0, q1, samestrand, idx) and arrays (start, end, delta)
-      if ( parse_next_chain(c) != 0 ) { continue }
+      if ( chain::parse_next_chain(c) != 0 ) { continue }
 
       # get the relevant reference chunk
       if ( "fasta" in arg::args ) { 
-        seq = faidx::query(arg::args["fasta"],qchr":"q0+1"-"q1)
+        seq = faidx::query(arg::args["fasta"], chain::qchr, chain::q0+1, chain::q1)
       }
 
-      cmd="tabix "vcf" "tchr":"t0+1"-"t1
+      cmd="tabix "vcf" "chain::tchr":"chain::t0+1"-"chain::t1
 
       # Get relevant VCF lines, replace CHR, POS, and revcomp REF and ALT if needed
       while ( cmd | getline vcfline > 0 ) {
@@ -59,9 +59,9 @@ function main() {
         # Currently skipping indels because they get misaligned if the chain is inverted
         if ( v[5] ~ /[^,][^,]/ ) { continue }
         for (id=0;id<=idx;id++) {
-          if ( v[2] > end[id] ) { delete delta[id] }
-          else if ( v[2] >= start[id] && v[2] < end[id] ) {
-            if ( !samestrand ) { 
+          if ( v[2] > chain::end[id] ) { delete chain::delta[id] }
+          else if ( v[2] >= chain::start[id] && v[2] < chain::end[id] ) {
+            if ( !chain::samestrand ) { 
               newalt=""
               v[4]=revcomp(v[4])
               split(v[5],alt,",")
@@ -69,10 +69,10 @@ function main() {
                 newalt= newalt "," revcomp(alt[i]) 
               }
               v[5]=substr(newalt,2)
-              v[2]-=2*(v[2]-end[id]) + length(v[4]) + 1
+              v[2]-=2*(v[2]-chain::end[id]) + length(v[4]) + 1
             }
             # Compare REF against new reference and change REF/ALT/GT if needed
-            if ( (ref=substr( seq, v[2]+delta[id]-q0, length(v[4]) )) != "" && toupper(ref) != toupper(v[4]) ) {
+            if ( (ref=substr( seq, v[2]+chain::delta[id]-chain::q0, length(v[4]) )) != "" && toupper(ref) != toupper(v[4]) ) {
               whereal=0
               # print "Warning: site "v[2]+delta[id]" does not match new ref: "v[4]">"ref > "/dev/stderr"
               if (v[5]==".") {
@@ -101,7 +101,7 @@ function main() {
                 }
               }
             }
-            printf("%s\t%s", qchr, v[2]+delta[id])
+            printf("%s\t%s", chain::qchr, v[2]+chain::delta[id])
             for(i=3;i<=nf;i++) { printf("\t%s", v[i]) }
             print ""
             break
