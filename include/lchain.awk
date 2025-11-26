@@ -57,7 +57,7 @@ function main() {
         continue
       }
       while ( getline < f > 0 ) {
-        gsub(" ", "\t", $1) 
+        gsub(/ /, "\t", $1) 
         print | sort
       }
       close(f)

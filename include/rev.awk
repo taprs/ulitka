@@ -40,7 +40,7 @@ function main() {
             parttwo[nr]=$3" "$2
             nr++
           }
-          while ( nr-- ) { print partone[nr]"\t"parttwo[nr-1] }
+          while ( nr-- ) { print partone[nr]" "parttwo[nr-1] }
         }
       }
       print ""
