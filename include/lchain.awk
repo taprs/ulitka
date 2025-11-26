@@ -31,6 +31,7 @@ function run() {
 function main() {
   if ( arg::args["rev"] ) {
     FS="\t"
+    OFS=" "
     for ( f in files ) {
       while ( getline < f ) {
         print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
@@ -43,7 +44,7 @@ function main() {
     RS="\n\n"
     FS="\n"
     OFS="\t"
-    sort="sort -t' ' -k3,3 -k6,7n"
+    sort="sort -k3,3 -k6,7n"
     if (arg::args["bgzip"]) { 
       sort = sort " | bgzip"
     }
@@ -56,7 +57,7 @@ function main() {
         continue
       }
       while ( getline < f > 0 ) {
-        $1=$1 # toggles new field sep 
+        gsub(" ", "\t", $1) 
         print | sort
       }
       close(f)
