@@ -35,23 +35,11 @@ function main() {
   for (reg in regs) {
     while ( getline < reg > 0 ) {
       isfile=1
-      print convert_coords(chain, $1, $2+1, $3)
+      print convert_coords(chain, $1, $2, $3)
     }
     if ( ! isfile ) {
-      sep1=match(reg, /:[0-9]+-?[0-9]+$/)
-      sep2=index(substr(reg, sep1+1), "-")
-      chr=substr(reg,1,sep1-1)
-      if (sep2 > 0) {
-        st=substr(reg,sep1+1,sep2-1)
-        en=substr(reg,sep1+sep2+1)
-      } else {
-       st = en = substr(reg,sep1+1)
-      }
-      if (st < 1) { st=1 }
-      if (chr=="" || st=="" || en=="") {
-        print "Error: no such file and region notation invalid: "reg > "/dev/stderr"; exit 1 
-      }
-      print convert_coords(chain, chr, st, en)
+      faidx::parse_region(reg)
+      print convert_coords(chain, faidx::chr, faidx::start, faidx::end)
     }
   }
 }
@@ -87,15 +75,15 @@ function convert_coords(chainfile, chr, pos1, pos2,
   }
   close(chainfile)
   if ( gotpos < npos ) {
-    print "Warning: position "chr":"(1 in pos ? pos[1] : pos[2])" not covered by the chain file" > "/dev/stderr"
+    print "Warning: position "chr":"(1 in pos ? pos[1]+1 : pos[2])" not covered by the chain file" > "/dev/stderr"
     return ""
   }
   if ( npos == 1 ) {
-    return chain::qchr"\t"newpos[1]-1"\t"newpos[1]
+    return chain::qchr"\t"newpos[1]"\t"newpos[1]
   } else if ( newpos[2] >= newpos[1] ) {
-    return chain::qchr"\t"newpos[1]-1"\t"newpos[2]
+    return chain::qchr"\t"newpos[1]"\t"newpos[2]
   } else {
-    return chain::qchr"\t"newpos[2]-1"\t"newpos[1]
+    return chain::qchr"\t"newpos[2]"\t"newpos[1]
   }
 }
 
