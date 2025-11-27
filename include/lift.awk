@@ -35,7 +35,7 @@ help="\
   exit main()
 }
 
-function main() {
+function main(a, c, i, id, v, al, newal, whereal, alt, newalt, seq, cmd, ref) {
   for (c in chains) {
     while (getline < c > 0) {
 
@@ -91,12 +91,12 @@ function main() {
               for(i=10;i<=nf;i++) {
                 gtend=index( v[i], ":" )
                 if ( gtend==0 ) { gtend=length(v[i])+1 }
-                for (c=1; c<gtend; c+=2) {
-                  al=substr(v[i],c,1)
+                for (a=1; a<gtend; a+=2) {
+                  al=substr(v[i],a,1)
                   if ( al == whereal ) {
-                    v[i]=substr(v[i],1,c-1) newal substr(v[i],c+1)
+                    v[i]=substr(v[i],1,a-1) newal substr(v[i],a+1)
                   } else if ( al == 0 ) {
-                    v[i]=substr(v[i],1,c-1) whereal substr(v[i],c+1)
+                    v[i]=substr(v[i],1,a-1) whereal substr(v[i],a+1)
                   }
                 }
               }
