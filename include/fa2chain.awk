@@ -94,6 +94,7 @@ function printout(    start, i, dd, size, out, dtdq, hang_start, h, hh) {
   start=1
   for(i=1;i<=l/2;i++) {
     dd=2*dash[i]+1*dash[l/2+i] # 0 if both non-gap, 1 if gap in 2nd, 2 if gap in 1st, 3 if both gap
+    delete dash[l/2+i]
     if ( dd==0 ) {
       start=0
       if (size > 0 && (dtdq[1] + dtdq[2] > 0) ) {
@@ -108,7 +109,6 @@ function printout(    start, i, dd, size, out, dtdq, hang_start, h, hh) {
       } else {
         dtdq[dd]++
       }
-      delete dash[l/2+i]
     }
   }
   out=out "\n" size
