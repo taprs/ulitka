@@ -17,9 +17,9 @@ function parse_next_chain(chainfile,
   q0=$11
   q1=$12
   samestrand=( $5 == $10 ) # same as checking if $10=="+"
+  idx=0 # number of chain segments
 
   # Local vars
-  idx=0
   direction=( samestrand ? 1 : -1 )
   q=q0+1
   t=( samestrand ? t0+1 : t1 )

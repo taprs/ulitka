@@ -44,7 +44,7 @@ function main() {
 
       # get the relevant reference chunk
       if ( "fasta" in arg::args ) { 
-        seq = faidx::query(arg::args["fasta"], chain::qchr, chain::q0+1, chain::q1)
+        seq = faidx::query(arg::args["fasta"], chain::qchr, chain::q0, chain::q1)
       }
 
       cmd="tabix "vcf" "chain::tchr":"chain::t0+1"-"chain::t1
@@ -58,7 +58,7 @@ function main() {
         nf=split(vcfline, v, "\t")
         # Currently skipping indels because they get misaligned if the chain is inverted
         if ( v[5] ~ /[^,][^,]/ ) { continue }
-        for (id=0;id<=idx;id++) {
+        for (id=0;id<=chain::idx;id++) {
           if ( v[2] > chain::end[id] ) { delete chain::delta[id] }
           else if ( v[2] >= chain::start[id] && v[2] < chain::end[id] ) {
             if ( !chain::samestrand ) { 

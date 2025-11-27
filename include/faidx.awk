@@ -31,13 +31,13 @@ function run() {
         isfile=1
         strand="" # can add BED column for strand here if needed
         if (arg::args["reverse-complement"] || strand=="-") {
-          seq = revcomp(query(fasta, $1, $2+1, $3))
+          seq = revcomp(query(fasta, $1, $2, $3))
           print ">" regg "/rc"
           for (i=1;i<=length(seq);i+=60) {
             print substr(seq,i,60) 
           }
         } else {
-          query(fasta, $1, $2+1, $3, "print")
+          query(fasta, $1, $2, $3, "print")
         }
       }
       if ( ! isfile ) {
