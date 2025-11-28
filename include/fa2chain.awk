@@ -133,7 +133,7 @@ function printout(    start, i, dd, size, out, dtdq, hang_start, h, hh) {
     exit 1
   }
 
-  if (faidx::strand != oldstrand) { faidx::strand="-" } # bcftools liftoff only takes plus-strand target features
+  faidx::strand = ( faidx::strand == oldstrand ? "+" : "-" ) # bcftools liftoff only takes plus-strand target features
   faidx::start+=hang_start[1]
   faidx::end-=dtdq[1]
   hh=hh" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[2]
