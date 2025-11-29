@@ -112,6 +112,7 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
     }
   }
   out=substr(out "\n" size, 2)
+  if (out == "") { return 0 }
   split(header, h, SUBSEP)
 
   faidx::parse_region(h[1])
