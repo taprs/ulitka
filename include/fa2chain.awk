@@ -150,7 +150,7 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
     }
     out = outrev o[1]
   }
-  hh=hh" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[2]
+  hh=hh" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[1]
 
   if (out != "\n") {
     print hh
