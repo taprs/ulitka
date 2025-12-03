@@ -50,6 +50,7 @@ function main(a, c, i, id, v, al, newal, whereal, alt, newalt, seq, cmd, ref) {
       cmd="tabix "vcf" "chain::tchr":"chain::t0+1"-"chain::t1
 
       # Get relevant VCF lines, replace CHR, POS, and revcomp REF and ALT if needed
+      startid=0
       while ( cmd | getline vcfline > 0 ) {
         if (vcfline ~ /^#/) { 
           print vcfline
@@ -58,9 +59,12 @@ function main(a, c, i, id, v, al, newal, whereal, alt, newalt, seq, cmd, ref) {
         nf=split(vcfline, v, "\t")
         # Currently skipping indels because they get misaligned if the chain is inverted
         if ( v[5] ~ /[^,][^,]/ ) { continue }
-        for (id=0;id<=chain::idx;id++) {
-          if ( v[2] > chain::end[id] ) { delete chain::delta[id] }
-          else if ( v[2] >= chain::start[id] && v[2] < chain::end[id] ) {
+        for (id=startid;id<chain::idx;id++) {
+          if ( v[2] > chain::end[id] ) { 
+            startid=id
+            continue
+          }
+          if ( v[2] > chain::start[id] && v[2] <= chain::end[id] ) {
             if ( !chain::samestrand ) { 
               newalt=""
               v[4]=revcomp(v[4])
@@ -69,7 +73,7 @@ function main(a, c, i, id, v, al, newal, whereal, alt, newalt, seq, cmd, ref) {
                 newalt= newalt "," revcomp(alt[i]) 
               }
               v[5]=substr(newalt,2)
-              v[2]-=2*(v[2]-chain::end[id]) + length(v[4]) + 1
+              v[2]-=2*(v[2]-chain::start[id]-1) + length(v[4])
             }
             # Compare REF against new reference and change REF/ALT/GT if needed
             if ( (ref=substr( seq, v[2]+chain::delta[id]-chain::q0, length(v[4]) )) != "" && toupper(ref) != toupper(v[4]) ) {

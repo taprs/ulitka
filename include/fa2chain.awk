@@ -90,7 +90,7 @@ function main() {
   }
 }
 
-function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start, h, hh) {
+function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start, h, hh, oldstart, oldend, oldstrand) {
   start=1
   for(i=1;i<=l/2;i++) {
     dd=2*dash[i]+1*dash[l/2+i] # 0 if both non-gap, 1 if gap in 2nd, 2 if gap in 1st, 3 if both gap
@@ -123,9 +123,10 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
   }
 
   oldstrand=faidx::strand
-  faidx::start+=hang_start[2]
-  faidx::end-=dtdq[2]
-  hh="chain 9999 "faidx::chr" "oldlen[faidx::chr]" + "faidx::start" "faidx::end
+  oldstart=faidx::start
+  oldend=faidx::end
+
+  hh="chain 9999 "faidx::chr" "oldlen[faidx::chr]" +"
 
   faidx::parse_region(h[2])
 
@@ -136,13 +137,20 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
 
   # bcftools liftoff only takes plus-strand target features
   # thus, we reverse the chain if target seq is minus-strand
-  faidx::strand = ( faidx::strand == oldstrand ? "+" : "-" )
-  if ( oldstrand == "+" ) {
+  if ( faidx::strand == "+" ) {
     faidx::start+=hang_start[1]
     faidx::end-=dtdq[1]
   } else {
     faidx::end-=hang_start[1]
     faidx::start+=dtdq[1]
+  }
+  faidx::strand = ( faidx::strand == oldstrand ? "+" : "-" )
+  if ( oldstrand == "+" ) {
+    oldstart+=hang_start[2]
+    oldend-=dtdq[2]
+  } else {
+    oldend-=hang_start[2]
+    oldstart+=dtdq[2]
     outl=split(out, o, "[\n ]")
     outrev=""
     while( (outl-=3) > 0 ) {
@@ -150,7 +158,7 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
     }
     out = outrev o[1]
   }
-  hh=hh" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[1]
+  hh=hh" "oldstart" "oldend" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[1]
 
   if (out != "\n") {
     print hh

@@ -21,34 +21,20 @@ function parse_next_chain(chainfile,
 
   # Local vars
   direction=( samestrand ? 1 : -1 )
-  q=q0+1
-  t=( samestrand ? t0+1 : t1 )
+  q=( samestrand ? q0 : q1 )
+  t=t0
 
   delete delta
   delete start
   delete end
   while ( getline < chainfile > 0 ) {
     if ( $0=="" ) { break }
-    idx++
     delta[idx]=q-t
-    start[idx]=(samestrand ? t : t-$1+1)
-    end[idx]=(samestrand ? t+$1 : t+1)
-    t+=direction*($1+$2)
-    q+=$1+$3
-  }
-  # order from smallest to largest start
-  if ( !samestrand ) {
-    for (i=0;i<idx/2;i++) {
-      x=delta[i]
-      y=start[i]
-      z=end[i]
-      delta[i]=delta[idx-i]
-      start[i]=start[idx-i]
-      end[i]=end[idx-i]
-      delta[idx-i]=x
-      start[idx-i]=y
-      end[idx-i]=z
-    }
+    start[idx]=t
+    end[idx]=t+$1
+    t+=$1+$2
+    q+=direction*($1+$3)
+    idx++
   }
   return 0
 
