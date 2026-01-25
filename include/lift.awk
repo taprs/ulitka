@@ -47,7 +47,7 @@ function main(a, c, i, id, v, al, newal, whereal, alt, newalt, seq, cmd, ref) {
         seq = faidx::query(arg::args["fasta"], chain::qchr, chain::q0, chain::q1)
       }
 
-      cmd="tabix "vcf" "chain::tchr":"chain::t0+1"-"chain::t1
+      cmd="tabix "vcf" '"chain::tchr"':"chain::t0+1"-"chain::t1
 
       # Get relevant VCF lines, replace CHR, POS, and revcomp REF and ALT if needed
       startid=0
