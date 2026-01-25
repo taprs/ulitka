@@ -12,53 +12,57 @@ help="\
   arg::add_argument("1", "old", 0, "old reference FASTA")
   arg::add_argument("2", "new", 0, "new reference FASTA")
   arg::add_argument("f", "fasta", 0, "FASTA file to be converted")
+  arg::add_argument("d", "dumb", 1, "ignore -1 and -2, just make a chain")
   arg::parse_args(2, help)
   arg::parse_nonargs()
 
-  if (ARGC < 4) { print help; exit 1 }
-  if ( "old" in arg::args ) { 
-    old=arg::args["old"] 
-  } else {
-    old=arg::nonargs[1]
-    delete arg::nonargs[1]
-  }
-  if ( "new" in arg::args ) { 
-    new=arg::args["new"] 
-  } else {
-    new=arg::nonargs[2]
-    delete arg::nonargs[2]
+  if ( !( "dumb" in arg::args ) ) {
+    if ( "old" in arg::args ) { 
+      old=arg::args["old"] 
+    } else {
+      old=arg::nonargs[1]
+      delete arg::nonargs[1]
+    }
+    if ( "new" in arg::args ) { 
+      new=arg::args["new"] 
+    } else {
+      new=arg::nonargs[2]
+      delete arg::nonargs[2]
+    }
+    ulitka::assert( old != "", "old ref, new ref, FASTA required" )
+    ulitka::assert( new != "", "old ref, new ref, FASTA required" )
   }
   if ( "fasta" in arg::args ) { fastas[arg::args["fasta"]]=nfastas=1 }
   for(i in arg::nonargs) {
     fastas[arg::nonargs[i]]=1
     nfastas++
   }
-  ulitka::assert( old != "", "old ref, new ref, FASTA required" )
-  ulitka::assert( new != "", "old ref, new ref, FASTA required" )
-  ulitka::assert( nfastas > 0, "old ref, new ref, FASTA required" )
+  ulitka::assert( nfastas > 0, "FASTA required" )
 
   exit main()
 }
 
 function main() {
-  fai1 = old".fai"
-  fai2 = new".fai"
-  if ( system("test -f " fai1) != 0 ) {
-    print "FAI index for "old" not found, making one now" > "/dev/stderr"
-    faidx::faindex(old)
+  if ( !( "dumb" in arg::args ) ) {
+    fai1 = old".fai"
+    fai2 = new".fai"
+    if ( system("test -f " fai1) != 0 ) {
+      print "FAI index for "old" not found, making one now" > "/dev/stderr"
+      faidx::faindex(old)
+    }
+    while ( getline < fai1 > 0) {
+      oldlen[$1]=$2
+    }
+    close(fai1)
+    if ( system("test -f " fai2) != 0 ) {
+      print "FAI index for "new" not found, making one now" > "/dev/stderr"
+      faidx::faindex(new)
+    }
+    while ( getline < fai2 > 0) {
+      newlen[$1]=$2
+    }
+    close(fai2)
   }
-  while ( getline < fai1 > 0) {
-    oldlen[$1]=$2
-  }
-  close(fai1)
-  if ( system("test -f " fai2) != 0 ) {
-    print "FAI index for "new" not found, making one now" > "/dev/stderr"
-    faidx::faindex(new)
-  }
-  while ( getline < fai2 > 0) {
-    newlen[$1]=$2
-  }
-  close(fai2)
 
   for (fasta in fastas) {
     delete dash
@@ -113,52 +117,50 @@ function printout(    start, i, dd, size, out, outl, o, outrev, dtdq, hang_start
   }
   out=substr(out "\n" size, 2)
   if (out == "") { return 0 }
-  split(header, h, SUBSEP)
 
-  faidx::parse_region(h[1])
-
-  if (!(faidx::chr in oldlen)) {
-    print "Error: chromosome "faidx::chr" not found in genome "old
-    exit 1
-  }
-
-  oldstrand=faidx::strand
-  oldstart=faidx::start
-  oldend=faidx::end
-
-  hh="chain 9999 "faidx::chr" "oldlen[faidx::chr]" +"
-
-  faidx::parse_region(h[2])
-
-  if (!(faidx::chr in newlen)) {
-    print "Error: chromosome "faidx::chr" not found in genome "new
-    exit 1
-  }
-
-  # bcftools liftoff only takes plus-strand target features
-  # thus, we reverse the chain if target seq is minus-strand
-  if ( faidx::strand == "+" ) {
-    faidx::start+=hang_start[1]
-    faidx::end-=dtdq[1]
-  } else {
-    faidx::end-=hang_start[1]
-    faidx::start+=dtdq[1]
-  }
-  faidx::strand = ( faidx::strand == oldstrand ? "+" : "-" )
-  if ( oldstrand == "+" ) {
-    oldstart+=hang_start[2]
-    oldend-=dtdq[2]
-  } else {
-    oldend-=hang_start[2]
-    oldstart+=dtdq[2]
-    outl=split(out, o, "[\n ]")
-    outrev=""
-    while( (outl-=3) > 0 ) {
-      outrev = outrev o[outl+3]" "o[outl+1]" "o[outl+2]"\n"
+  if ( !( "dumb" in arg::args ) ) {
+    split(header, h, SUBSEP)
+    faidx::parse_region(h[1])
+    if (!(faidx::chr in oldlen)) {
+      print "Error: chromosome "faidx::chr" not found in genome "old
+      exit 1
     }
-    out = outrev o[1]
+    oldstrand=faidx::strand
+    oldstart=faidx::start
+    oldend=faidx::end
+    hh="chain 9999 "faidx::chr" "oldlen[faidx::chr]" +"
+    faidx::parse_region(h[2])
+    if (!(faidx::chr in newlen)) {
+      print "Error: chromosome "faidx::chr" not found in genome "new
+      exit 1
+    }
+    # bcftools liftoff only takes plus-strand target features
+    # thus, we reverse the chain if target seq is minus-strand
+    if ( faidx::strand == "+" ) {
+      faidx::start+=hang_start[1]
+      faidx::end-=dtdq[1]
+    } else {
+      faidx::end-=hang_start[1]
+      faidx::start+=dtdq[1]
+    }
+    faidx::strand = ( faidx::strand == oldstrand ? "+" : "-" )
+    if ( oldstrand == "+" ) {
+      oldstart+=hang_start[2]
+      oldend-=dtdq[2]
+    } else {
+      oldend-=hang_start[2]
+      oldstart+=dtdq[2]
+      outl=split(out, o, "[\n ]")
+      outrev=""
+      while( (outl-=3) > 0 ) {
+        outrev = outrev o[outl+3]" "o[outl+1]" "o[outl+2]"\n"
+      }
+      out = outrev o[1]
+    }
+    hh=hh" "oldstart" "oldend" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[1]
+  } else {
+    hh="chain 9999 old "l/2" + 0 "l/2" new "l/2" + 0 "l/2" dummy"
   }
-  hh=hh" "oldstart" "oldend" "faidx::chr" "newlen[faidx::chr]" "faidx::strand" "faidx::start" "faidx::end" "h[1]
 
   if (out != "\n") {
     print hh
