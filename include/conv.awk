@@ -156,6 +156,10 @@ function convert_coords(chainfile, chr, pos1, pos2) {
     }
   }
   close(chainfile)
+  if ( npos == "" ) {
+    print "Warning: region "chr":"pos1":"pos2" not covered by the chain file" > "/dev/stderr"
+    return ""
+  }
   if ( gotpos < npos ) {
     print "Warning: position "chr":"(1 in pos ? pos[1]+1 : pos[2])" not covered by the chain file" > "/dev/stderr"
     return ""
