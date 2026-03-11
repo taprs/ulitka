@@ -47,6 +47,7 @@ function main() {
     for (reg in regs) {
       while ( getline < reg > 0 ) {
         isfile=1
+        nf=split($0, bedline)
         convert_coords(chain, $1, $2, $3)
       }
       if ( ! isfile ) {
@@ -81,12 +82,18 @@ function slide_chain(p1, p2,    id, p) {
 }
 
 function return_bed() {
+  rest=""
+  if ( nf > 3 ) {
+    if      ( bedline[6] == "+" ) { bedline[6]="-" }
+    else if ( bedline[6] == "-" ) { bedline[6]="+" }
+    for (i=4; i<=nf; i++) { rest=rest"\t"bedline[i] }
+  }
   if ( npos == 1 ) {
-    print chain::qchr"\t"newpos[1]"\t"newpos[1]
+    print chain::qchr"\t"newpos[1]"\t"newpos[1] rest
   } else if ( newpos[2] >= newpos[1] ) {
-    print chain::qchr"\t"newpos[1]"\t"newpos[2]
+    print chain::qchr"\t"newpos[1]"\t"newpos[2] rest
   } else {
-    print chain::qchr"\t"newpos[2]"\t"newpos[1]
+    print chain::qchr"\t"newpos[2]"\t"newpos[1] rest
   }
 }
 
@@ -99,6 +106,7 @@ function convert_coords_index(chainfile, regfile) {
     }
     cmd="tabix "regidx" "chain::tchr":"chain::t0+1"-"chain::t1
     while ( cmd | getline > 0 ) {
+      nf=split($0, bedline)
       gotpos=0
       if ( !slide_chain($2, $3) ) {
         print "Warning: position "chain::tchr":"(1 in pos ? pos[1]+1 : pos[2])" not covered by the chain file" > "/dev/stderr"
