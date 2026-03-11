@@ -84,8 +84,10 @@ function slide_chain(p1, p2,    id, p) {
 function return_bed() {
   rest=""
   if ( nf > 3 ) {
-    if      ( bedline[6] == "+" ) { bedline[6]="-" }
-    else if ( bedline[6] == "-" ) { bedline[6]="+" }
+    if ( newpos[2] >= newpos[1] ) {
+      if      ( bedline[6] == "+" ) { bedline[6]="-" }
+      else if ( bedline[6] == "-" ) { bedline[6]="+" }
+    }
     for (i=4; i<=nf; i++) { rest=rest"\t"bedline[i] }
   }
   if ( npos == 1 ) {
